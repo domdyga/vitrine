@@ -5,6 +5,7 @@ import { useFeed } from '@/lib/hooks/useFeed'
 import { useProfileModal } from '@/lib/hooks/useProfileModal'
 import { trackClick } from '@/lib/analytics'
 import FeedCard from './FeedCard'
+import LoginButton from './LoginButton'
 import ProfileModal from '@/components/profile/ProfileModal'
 import type { Model } from '@/types/models'
 
@@ -36,6 +37,7 @@ export default function FeedContainer({ models }: FeedContainerProps) {
 
   return (
     <>
+      <LoginButton />
       <div ref={containerRef} className="feed-container">
         {models.map((model, index) => (
           <FeedCard

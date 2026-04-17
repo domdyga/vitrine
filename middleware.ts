@@ -3,15 +3,23 @@ import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next({ request })
+  const { pathname } = request.nextUrl
+
+  const isAdminRoute = pathname.startsWith('/admin')
+  const isAdminLogin = pathname === '/admin/login'
+  const isDashboardRoute = pathname.startsWith('/dashboard')
+  const isLoginPage = pathname === '/login'
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-  // If Supabase isn't configured, only block non-login admin routes
+  // Without Supabase config: guard admin routes only
   if (!url || !key) {
-    const isLogin = request.nextUrl.pathname === '/admin/login'
-    if (!isLogin) {
+    if (isAdminRoute && !isAdminLogin) {
       return NextResponse.redirect(new URL('/admin/login', request.url))
+    }
+    if (isDashboardRoute) {
+      return NextResponse.redirect(new URL('/login', request.url))
     }
     return response
   }
@@ -29,23 +37,34 @@ export async function middleware(request: NextRequest) {
     },
   })
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  const isLoginPage = request.nextUrl.pathname === '/admin/login'
-
-  if (!user && !isLoginPage) {
-    return NextResponse.redirect(new URL('/admin/login', request.url))
+  // --- Admin routes ---
+  if (isAdminRoute) {
+    if (!user && !isAdminLogin) {
+      return NextResponse.redirect(new URL('/admin/login', request.url))
+    }
+    if (user && isAdminLogin) {
+      return NextResponse.redirect(new URL('/admin', request.url))
+    }
   }
 
-  if (user && isLoginPage) {
-    return NextResponse.redirect(new URL('/admin', request.url))
+  // --- Dashboard routes ---
+  if (isDashboardRoute && !user) {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  // --- /login: redirect already-authenticated users ---
+  if (isLoginPage && user) {
+    const role = user.user_metadata?.role as string | undefined
+    return NextResponse.redirect(
+      new URL(role === 'admin' ? '/admin' : '/dashboard', request.url)
+    )
   }
 
   return response
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/admin/:path*', '/dashboard/:path*', '/login'],
 }
