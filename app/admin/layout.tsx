@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import AdminSignOut from './SignOut'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -14,6 +15,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link href="/" className="text-sm text-white/30 hover:text-white/60 transition-colors">
             ← Feed
           </Link>
+          <AdminSignOut />
         </div>
       </nav>
       <main className="max-w-4xl mx-auto px-6 py-10">
