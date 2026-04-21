@@ -18,7 +18,7 @@ const slideVariants = {
 export default function LoginPage() {
   const [phase, setPhase] = useState<Phase>('select')
   const [role, setRole] = useState<Role>('admin')
-  const [email, setEmail] = useState('')
+  const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -36,33 +36,42 @@ export default function LoginPage() {
     setError(null)
 
     const supabase = getSupabaseBrowserClient()
-    if (!supabase) {
-      setError('Supabase non configuré. Ajoutez les variables d\'environnement.')
+
+    // Try Supabase only when identifier looks like an email
+    if (supabase && identifier.includes('@')) {
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email: identifier,
+        password,
+      })
+      if (!authError && data.user) {
+        const metaRole = data.user.user_metadata?.role as string | undefined
+        router.push(metaRole === 'admin' || (!metaRole && role === 'admin') ? '/admin' : '/dashboard')
+        router.refresh()
+        return
+      }
+      // fall through to env-var auth if Supabase fails
+    }
+
+    // For admin role: try env-var auth (works with username, no @ required)
+    if (role === 'admin') {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: identifier, password }),
+      })
+      const data = await res.json()
+      if (res.ok) {
+        router.push('/admin')
+        router.refresh()
+        return
+      }
+      setError(data.error ?? 'Identifiants incorrects.')
       setLoading(false)
       return
     }
 
-    const { data, error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-
-    if (authError) {
-      setError(authError.message === 'Invalid login credentials'
-        ? 'Email ou mot de passe incorrect.'
-        : authError.message)
-      setLoading(false)
-      return
-    }
-
-    // Redirect based on user_metadata.role, fallback to chosen role
-    const metaRole = data.user?.user_metadata?.role as string | undefined
-    if (metaRole === 'admin' || (!metaRole && role === 'admin')) {
-      router.push('/admin')
-    } else {
-      router.push('/dashboard')
-    }
-    router.refresh()
+    setError('Email ou mot de passe incorrect.')
+    setLoading(false)
   }
 
   const inputClass =
@@ -170,11 +179,12 @@ export default function LoginPage() {
 
               <form onSubmit={handleSubmit} className="space-y-3">
                 <input
-                  type="email"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  type="text"
+                  placeholder={role === 'admin' ? "Nom d'utilisateur ou email" : 'Email'}
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
                   className={inputClass}
+                  autoComplete="username"
                   required
                   autoFocus
                 />
