@@ -11,13 +11,47 @@ interface FeedCardProps {
   priority?: boolean
 }
 
+const BG_SYMBOLS = [
+  { s: '🔞', x: 8,  y: 6,  size: 28, rot: -12, op: 0.18 },
+  { s: '💋', x: 78, y: 4,  size: 34, rot: 10,  op: 0.14 },
+  { s: '🌹', x: 88, y: 18, size: 26, rot: -6,  op: 0.16 },
+  { s: '🔥', x: 4,  y: 22, size: 30, rot: 8,   op: 0.14 },
+  { s: '✨', x: 60, y: 2,  size: 22, rot: 15,  op: 0.20 },
+  { s: '💎', x: 92, y: 50, size: 24, rot: -10, op: 0.13 },
+  { s: '🌹', x: 2,  y: 55, size: 22, rot: 12,  op: 0.12 },
+  { s: '🔞', x: 72, y: 88, size: 26, rot: 6,   op: 0.16 },
+  { s: '💋', x: 15, y: 82, size: 30, rot: -8,  op: 0.14 },
+  { s: '🔥', x: 88, y: 76, size: 28, rot: -14, op: 0.13 },
+  { s: '✨', x: 40, y: 92, size: 20, rot: 20,  op: 0.18 },
+  { s: '💎', x: 50, y: 14, size: 20, rot: -5,  op: 0.12 },
+]
+
 export default function FeedCard({ model, isActive, onClick, priority = false }: FeedCardProps) {
   return (
     <div
-      className="feed-card cursor-pointer flex flex-col items-center justify-center bg-black px-5 pt-6 pb-8 gap-5"
+      className="feed-card cursor-pointer flex flex-col items-center justify-center bg-zinc-950 px-5 pt-6 pb-8 gap-5 relative overflow-hidden"
       data-model-id={model.id}
       onClick={onClick}
     >
+      {/* Decorative background symbols */}
+      <div className="absolute inset-0 pointer-events-none select-none" aria-hidden="true">
+        {BG_SYMBOLS.map((sym, i) => (
+          <span
+            key={i}
+            className="absolute"
+            style={{
+              left: `${sym.x}%`,
+              top: `${sym.y}%`,
+              fontSize: sym.size,
+              opacity: sym.op,
+              transform: `rotate(${sym.rot}deg)`,
+              lineHeight: 1,
+            }}
+          >
+            {sym.s}
+          </span>
+        ))}
+      </div>
       {/* Portrait photo frame */}
       <motion.div
         className="relative w-full rounded-2xl overflow-hidden shadow-2xl"
