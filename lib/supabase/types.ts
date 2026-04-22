@@ -9,8 +9,11 @@ export type Database = {
           city: string
           country: string
           height: string | null
+          bio: string | null
           cover_image: string
           images: string[]
+          model_username: string | null
+          model_password_hash: string | null
           created_at: string
         }
         Insert: {
@@ -20,8 +23,11 @@ export type Database = {
           city: string
           country: string
           height?: string | null
+          bio?: string | null
           cover_image: string
           images: string[]
+          model_username?: string | null
+          model_password_hash?: string | null
           created_at?: string
         }
         Update: {
@@ -31,8 +37,11 @@ export type Database = {
           city?: string
           country?: string
           height?: string | null
+          bio?: string | null
           cover_image?: string
           images?: string[]
+          model_username?: string | null
+          model_password_hash?: string | null
           created_at?: string
         }
         Relationships: []

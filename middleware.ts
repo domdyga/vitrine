@@ -67,6 +67,13 @@ export async function middleware(request: NextRequest) {
 
   // --- Dashboard routes ---
   if (isDashboardRoute) {
+    // Check model_token cookie (per-model credential auth)
+    const modelToken = request.cookies.get('model_token')?.value
+    if (modelToken && /^[0-9a-f-]+\.[0-9a-f]{64}$/.test(modelToken)) {
+      return response
+    }
+
+    // Fallback: Supabase session
     if (supabaseUrl && supabaseKey) {
       const supabase = createServerClient(supabaseUrl, supabaseKey, {
         cookies: {
@@ -78,10 +85,10 @@ export async function middleware(request: NextRequest) {
         },
       })
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return NextResponse.redirect(new URL('/login', request.url))
-    } else {
-      return NextResponse.redirect(new URL('/login', request.url))
+      if (user) return response
     }
+
+    return NextResponse.redirect(new URL('/login', request.url))
   }
 
   // --- /login: redirect already-authenticated users ---

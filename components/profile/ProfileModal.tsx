@@ -74,11 +74,18 @@ export default function ProfileModal({ model, onClose }: ProfileModalProps) {
             </div>
             {model.height && (
               <div className="bg-white/5 rounded-2xl p-4">
-                <p className="text-white/40 text-xs uppercase tracking-widest mb-1">Height</p>
+                <p className="text-white/40 text-xs uppercase tracking-widest mb-1">Taille</p>
                 <p className="text-2xl font-light">{model.height}</p>
               </div>
             )}
           </div>
+
+          {model.bio && (
+            <div>
+              <p className="text-white/40 text-xs uppercase tracking-widest mb-2">À propos</p>
+              <p className="text-white/80 text-sm leading-relaxed">{model.bio}</p>
+            </div>
+          )}
 
           <button
             className="w-full py-4 bg-white text-black font-semibold rounded-2xl text-sm tracking-widest uppercase hover:bg-white/90 active:scale-[0.98] transition-all"

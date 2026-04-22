@@ -35,25 +35,23 @@ export default function LoginPage() {
     setLoading(true)
     setError(null)
 
-    const supabase = getSupabaseBrowserClient()
-
-    // Try Supabase only when identifier looks like an email
-    if (supabase && identifier.includes('@')) {
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email: identifier,
-        password,
-      })
-      if (!authError && data.user) {
-        const metaRole = data.user.user_metadata?.role as string | undefined
-        router.push(metaRole === 'admin' || (!metaRole && role === 'admin') ? '/admin' : '/dashboard')
-        router.refresh()
-        return
-      }
-      // fall through to env-var auth if Supabase fails
-    }
-
-    // For admin role: try env-var auth (works with username, no @ required)
     if (role === 'admin') {
+      const supabase = getSupabaseBrowserClient()
+
+      // Try Supabase if identifier looks like email
+      if (supabase && identifier.includes('@')) {
+        const { data, error: authError } = await supabase.auth.signInWithPassword({
+          email: identifier,
+          password,
+        })
+        if (!authError && data.user) {
+          router.push('/admin')
+          router.refresh()
+          return
+        }
+      }
+
+      // Env-var auth (username, no @ required)
       const res = await fetch('/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -70,7 +68,19 @@ export default function LoginPage() {
       return
     }
 
-    setError('Email ou mot de passe incorrect.')
+    // Mannequin auth via model credentials stored in DB
+    const res = await fetch('/api/model/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: identifier, password }),
+    })
+    const data = await res.json()
+    if (res.ok) {
+      router.push('/dashboard')
+      router.refresh()
+      return
+    }
+    setError(data.error ?? 'Identifiants incorrects.')
     setLoading(false)
   }
 
@@ -180,7 +190,7 @@ export default function LoginPage() {
               <form onSubmit={handleSubmit} className="space-y-3">
                 <input
                   type="text"
-                  placeholder={role === 'admin' ? "Nom d'utilisateur ou email" : 'Email'}
+                  placeholder={role === 'admin' ? "Nom d'utilisateur ou email" : "Nom d'utilisateur"}
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                   className={inputClass}

@@ -8,12 +8,15 @@ export const MOCK_MODELS: Model[] = [
     city: 'Paris',
     country: 'France',
     height: '178cm',
+    bio: null,
     cover_image: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=800&q=80',
     images: [
       'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=800&q=80',
       'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&q=80',
       'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800&q=80',
     ],
+    model_username: null,
+    model_password_hash: null,
     created_at: new Date().toISOString(),
   },
   {
@@ -23,11 +26,14 @@ export const MOCK_MODELS: Model[] = [
     city: 'Milan',
     country: 'Italy',
     height: '175cm',
+    bio: null,
     cover_image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800&q=80',
     images: [
       'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800&q=80',
       'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=800&q=80',
     ],
+    model_username: null,
+    model_password_hash: null,
     created_at: new Date().toISOString(),
   },
   {
@@ -37,11 +43,14 @@ export const MOCK_MODELS: Model[] = [
     city: 'New York',
     country: 'USA',
     height: '180cm',
+    bio: null,
     cover_image: 'https://images.unsplash.com/photo-1496440543928-1f39f7a4a1e8?w=800&q=80',
     images: [
       'https://images.unsplash.com/photo-1496440543928-1f39f7a4a1e8?w=800&q=80',
       'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800&q=80',
     ],
+    model_username: null,
+    model_password_hash: null,
     created_at: new Date().toISOString(),
   },
   {
@@ -51,10 +60,13 @@ export const MOCK_MODELS: Model[] = [
     city: 'Berlin',
     country: 'Germany',
     height: '176cm',
+    bio: null,
     cover_image: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=800&q=80',
     images: [
       'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=800&q=80',
     ],
+    model_username: null,
+    model_password_hash: null,
     created_at: new Date().toISOString(),
   },
   {
@@ -64,11 +76,14 @@ export const MOCK_MODELS: Model[] = [
     city: 'London',
     country: 'UK',
     height: '172cm',
+    bio: null,
     cover_image: 'https://images.unsplash.com/photo-1488716820095-cbe80883c496?w=800&q=80',
     images: [
       'https://images.unsplash.com/photo-1488716820095-cbe80883c496?w=800&q=80',
       'https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=800&q=80',
     ],
+    model_username: null,
+    model_password_hash: null,
     created_at: new Date().toISOString(),
   },
 ]
