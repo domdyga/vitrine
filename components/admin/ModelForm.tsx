@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { getSupabaseBrowserClient } from '@/lib/supabase/client'
 import type { Model } from '@/types/models'
 
 interface ModelFormProps {
@@ -25,21 +24,14 @@ export default function ModelForm({ model }: ModelFormProps) {
   const [error, setError] = useState<string | null>(null)
 
   async function uploadImage(file: File): Promise<string> {
-    const supabase = getSupabaseBrowserClient()
-    if (!supabase) throw new Error('Supabase not configured')
+    const form = new FormData()
+    form.append('file', file)
 
-    const filename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`
-    const { error: uploadError, data } = await supabase.storage
-      .from('model-images')
-      .upload(filename, file, { cacheControl: '3600', upsert: false })
+    const res = await fetch('/api/admin/upload', { method: 'POST', body: form })
+    const data = await res.json()
 
-    if (uploadError) throw uploadError
-
-    const { data: urlData } = supabase.storage
-      .from('model-images')
-      .getPublicUrl(data.path)
-
-    return urlData.publicUrl
+    if (!res.ok) throw new Error(data.error ?? 'Upload échoué')
+    return data.url as string
   }
 
   async function handleCoverUpload(e: React.ChangeEvent<HTMLInputElement>) {
