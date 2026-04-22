@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { isAdminAuthorized } from '@/lib/auth'
 
 export async function GET(
   _req: NextRequest,
@@ -27,14 +28,13 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    if (!await isAdminAuthorized(req)) {
+      return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
+    }
+
     const { id } = await params
     const { getSupabaseServiceClient } = await import('@/lib/supabase/server')
     const supabase = getSupabaseServiceClient()
-
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
 
     const body = await req.json()
     const { data, error } = await supabase
@@ -53,18 +53,17 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    if (!await isAdminAuthorized(req)) {
+      return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
+    }
+
     const { id } = await params
     const { getSupabaseServiceClient } = await import('@/lib/supabase/server')
     const supabase = getSupabaseServiceClient()
-
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
 
     const { error } = await supabase.from('models').delete().eq('id', id)
     if (error) throw error

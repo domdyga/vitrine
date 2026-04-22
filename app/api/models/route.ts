@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { MOCK_MODELS } from '@/lib/mock-data'
+import { isAdminAuthorized } from '@/lib/auth'
 
 export async function GET() {
   try {
@@ -19,13 +20,12 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const { getSupabaseServiceClient } = await import('@/lib/supabase/server')
-    const supabase = await getSupabaseServiceClient()
-
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!await isAdminAuthorized(req)) {
+      return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
     }
+
+    const { getSupabaseServiceClient } = await import('@/lib/supabase/server')
+    const supabase = getSupabaseServiceClient()
 
     const body = await req.json()
     const { data, error } = await supabase
