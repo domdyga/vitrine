@@ -30,13 +30,13 @@ export default function ModelForm({ model }: ModelFormProps) {
 
     const filename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`
     const { error: uploadError, data } = await supabase.storage
-      .from('image du modele')
+      .from('image du modèle')
       .upload(filename, file, { cacheControl: '3600', upsert: false })
 
     if (uploadError) throw uploadError
 
     const { data: urlData } = supabase.storage
-      .from('image du modele')
+      .from('image du modèle')
       .getPublicUrl(data.path)
 
     return urlData.publicUrl
