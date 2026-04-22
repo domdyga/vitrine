@@ -14,40 +14,48 @@ interface FeedCardProps {
 export default function FeedCard({ model, isActive, onClick, priority = false }: FeedCardProps) {
   return (
     <div
-      className="feed-card cursor-pointer"
+      className="feed-card cursor-pointer flex flex-col items-center justify-center bg-black px-5 pt-6 pb-8 gap-5"
       data-model-id={model.id}
       onClick={onClick}
     >
-      {/* Fullscreen cover image */}
-      <Image
-        src={model.cover_image}
-        alt={model.name}
-        fill
-        className="object-cover"
-        priority={priority}
-        sizes="100vw"
-      />
-
-      {/* Dark gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-10" />
-
-      {/* Text overlay */}
+      {/* Portrait photo frame */}
       <motion.div
-        className="absolute bottom-0 left-0 right-0 z-20 p-8 pb-16"
-        initial={{ opacity: 0, y: 20 }}
-        animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-        transition={{ duration: 0.5, ease: 'easeOut', delay: 0.1 }}
+        className="relative w-full rounded-2xl overflow-hidden shadow-2xl"
+        style={{ maxWidth: 480, aspectRatio: '3/4' }}
+        initial={{ opacity: 0, scale: 0.97 }}
+        animate={isActive ? { opacity: 1, scale: 1 } : { opacity: 0.6, scale: 0.97 }}
+        transition={{ duration: 0.4, ease: 'easeOut' }}
       >
-        <h1 className="text-5xl font-bold tracking-tight leading-none mb-3">
+        <Image
+          src={model.cover_image}
+          alt={model.name}
+          fill
+          className="object-cover object-top"
+          priority={priority}
+          sizes="(max-width: 480px) 100vw, 480px"
+        />
+        {/* Subtle bottom gradient for legibility */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+      </motion.div>
+
+      {/* Text below the frame */}
+      <motion.div
+        className="w-full text-center"
+        style={{ maxWidth: 480 }}
+        initial={{ opacity: 0, y: 10 }}
+        animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+        transition={{ duration: 0.4, ease: 'easeOut', delay: 0.1 }}
+      >
+        <h1 className="text-2xl font-bold tracking-tight leading-none">
           {model.name}
         </h1>
-        <div className="flex items-center gap-3 text-white/70 text-sm font-light tracking-widest uppercase">
+        <div className="flex items-center justify-center gap-2 text-white/50 text-xs font-light tracking-widest uppercase mt-2">
           <span>{model.city}, {model.country}</span>
-          <span className="w-1 h-1 rounded-full bg-white/40" />
-          <span>{model.age}</span>
+          <span className="w-1 h-1 rounded-full bg-white/30" />
+          <span>{model.age} ans</span>
         </div>
-        <p className="mt-6 text-white/30 text-xs tracking-widest uppercase">
-          Tap to view profile
+        <p className="mt-3 text-white/20 text-xs tracking-widest uppercase">
+          Appuyer pour voir le profil
         </p>
       </motion.div>
     </div>
